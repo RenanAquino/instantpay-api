@@ -9,7 +9,7 @@ import com.instantpay.app.user.dtos.UserDTO;
 public interface UserService {
     
     public UserDTO findById(UUID id);
-    public void createUser(CreateUserDTO data);
+    public UserDTO createUser(CreateUserDTO data);
     public void updateUser(UUID id, UpdateUserDTO data);
     public void closeAccount(UUID id);
 }
