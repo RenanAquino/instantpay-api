@@ -1,14 +1,14 @@
 package com.instantpay.app.security;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.instantpay.app.user.exceptions.UserNotFoundException;
 import com.instantpay.app.user.models.User;
 import com.instantpay.app.user.repositories.UserRepository;
 
@@ -35,7 +35,8 @@ public class SecurityFilter extends OncePerRequestFilter {
        if (token != null) {
             var subject = tokenService.validateToken(token);
 
-            UserDetails user = userRepository.findByEmail(subject);
+            User user = userRepository.findById(UUID.fromString(subject))
+                .orElseThrow(() -> new UserNotFoundException());
 
             var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 

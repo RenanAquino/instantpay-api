@@ -1,12 +1,10 @@
 package com.instantpay.app.user.controllers;
 
-import java.util.UUID;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.instantpay.app.user.dtos.CreateUserDTO;
 import com.instantpay.app.user.dtos.UpdateUserDTO;
 import com.instantpay.app.user.dtos.UserDTO;
+import com.instantpay.app.user.models.User;
 import com.instantpay.app.user.services.UserService;
 
 import jakarta.validation.Valid;
@@ -30,9 +29,9 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> findById(@PathVariable UUID id) {
-        UserDTO userDTO = userService.findById(id);
+    @GetMapping()
+    public ResponseEntity<UserDTO> findById(@AuthenticationPrincipal User user) {
+        UserDTO userDTO = userService.findById(user.getId());
         return ResponseEntity.ok(userDTO);
     }
 
@@ -42,15 +41,15 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUser(@PathVariable UUID id, @Valid @RequestBody UpdateUserDTO data) {
-        userService.updateUser(id, data);
+    @PutMapping
+    public ResponseEntity<Void> updateUser(@AuthenticationPrincipal User user, @Valid @RequestBody UpdateUserDTO data) {
+        userService.updateUser(user.getId(), data);
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{id}/close")
-    public ResponseEntity<Void> closeAccount(@PathVariable UUID id) {
-        userService.closeAccount(id);
+    @PatchMapping("/close")
+    public ResponseEntity<Void> closeAccount(@AuthenticationPrincipal User user) {
+        userService.closeAccount(user.getId());
         return ResponseEntity.noContent().build();
     }
 }
