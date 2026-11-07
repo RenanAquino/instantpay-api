@@ -15,16 +15,19 @@ import com.instantpay.app.user.exceptions.ClosedAccountException;
 import com.instantpay.app.user.exceptions.UserNotFoundException;
 import com.instantpay.app.user.models.User;
 import com.instantpay.app.user.repositories.UserRepository;
+import com.instantpay.app.wallet.services.WalletService;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final WalletService walletService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, WalletService walletService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.walletService = walletService;
     }
 
     @Override
@@ -45,6 +48,9 @@ public class UserServiceImpl implements UserService {
         user.setEmail(data.email().trim().toLowerCase());
         user.setPassword(passwordEncoder.encode(data.password()));
         userRepository.save(user);
+        
+        walletService.createWallet(user);
+
         return mapToUserDTO(user);
     }
 
