@@ -36,7 +36,7 @@ public class Wallet {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal balance = BigDecimal.ZERO;
     
     public void addBalance(BigDecimal amount) {
